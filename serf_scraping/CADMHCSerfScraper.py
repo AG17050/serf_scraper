@@ -29,7 +29,7 @@ class CADMHCSerfScraper(SerfScraper):
         self.file_tracker = FileTracker()
         
         # remove for deployment
-        self.file_tracker.wipe_download_records()
+        # self.file_tracker.wipe_download_records()
         
         self.num_downloads = len(os.listdir(get_download_path()))
     
@@ -278,3 +278,4 @@ class CADMHCSerfScraper(SerfScraper):
             
         self.file_tracker.save_files_dict()
         self.__rename_serfiles_filenames()
+        self.driver.close()

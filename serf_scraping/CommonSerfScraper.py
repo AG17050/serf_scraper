@@ -28,7 +28,7 @@ class CommonSerfScraper(SerfScraper):
         self.carrier_matcher = CarrierMatcher()
         self.file_tracker = FileTracker()
         
-        self.file_tracker.wipe_download_records()
+        # self.file_tracker.wipe_download_records()
         
         self.num_downloads = len(os.listdir(get_download_path()))
         
@@ -423,6 +423,7 @@ class CommonSerfScraper(SerfScraper):
                 
         time.sleep(30)
         self.file_tracker.save_files_dict()
+        self.driver.close()
     
     
 # url = 'https://filingaccess.serff.com/sfa/home/CO'

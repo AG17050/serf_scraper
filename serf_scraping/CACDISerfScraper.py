@@ -21,7 +21,7 @@ class CACDISerfScraper(SerfScraper):
         self.filing_urls = []
         
         self.file_tracker = FileTracker()
-        self.file_tracker.wipe_download_records()
+        # self.file_tracker.wipe_download_records()
         
         self.num_downloads = len(os.listdir(get_download_path()))
         
@@ -264,5 +264,6 @@ class CACDISerfScraper(SerfScraper):
         time.sleep(15)
         self.file_tracker.save_files_dict()
         self.__rename_serfiles_filenames()
+        self.driver.close()
                 
                 
