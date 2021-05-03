@@ -11,8 +11,8 @@ import re
 
 class CarrierMatcher:
     
-    def __init__(self, carrier_file_name = 'carrier_matching/Carrier_List.xlsx'):
-        self.carrier_df = pd.read_excel(carrier_file_name)
+    def __init__(self, carrier_file_name = 'carrier_matching/Carrier_List.csv'):
+        self.carrier_df = pd.read_csv(carrier_file_name)
         self.companies, self.carriers = self.__initial_data_processing()
         
         self.comp_to_carrier_dict = dict(zip(self.companies, self.carriers))

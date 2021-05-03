@@ -1,0 +1,41 @@
+State,Parent,Filing Company,Segment,HIOS ID
+CA,BlueShield,California Physician's Service,IND & SMG,70285
+CA,Centene,Health Net of CA (HMO) ,IND & SMG,67138
+CA,Centene,Health Net Life (PPO),IND & SMG,99110
+CA,United,UHC Benefits Plan of CA,SMG,37873
+CA,United,UHC of CA,SMG,49116
+CO,CO Choice,Colorado Choice Health Plans ,IND & SMG,63312
+CT,Harvard Pilgrim,HPHC Insurance CO (CT),SMG,89130
+CT,United,Oxford Health Ins (CT),SMG,29462
+CT,United,Oxford Health Plan (CT),SMG,71179
+CT,United,UHC  ,SMG,49650
+GA,Anthem,Blue Cross Blue Shield of Georgia,IND & SMG,49046
+GA,Centene,Ambetter by Peach State,IND,70893
+IN,Centene,Celtic Insurance Co,IND,76179
+IN,PHP,Physicians Health Plan (PHP),SMG,50816
+IN,United ,All Savers,SMG,36373
+IN,United ,UHC of KY,SMG,69529
+ME,Harvard Pilgrim,HPHC Insurance CO,SMG,11593
+MO,Celtic,Centene - Celtic - Ambetter,IND,99723
+MO,Dean Health Plan,SSM Health Ins - Dean Health,IND,47840
+NH,Anthem ,Matthew Thornton Health,SMG,57601
+NH,Harvard Pilgrim ,HPHC Insurance Co,SMG,71616
+NV,United,Health Plan of Nevada,IND & SMG,95865
+NV,United,Sierra,IND & SMG,83198
+NV,Prominence,St Mary's/Prominence (HMO),SMG,16698
+NY,Anthem,HealthPlus HP LLC,IND,41046
+NY,Blue Shield of Northeast,HealthNow New York Inc,IND,36346
+NY,CDPHP HMO,Capital District Physicians' Health Plan,IND,94788
+NY,Emblem,Health Insurance Plan of Greater NY (HIP),IND & SMG,88582
+NY,Fidelis,New York Quality Healthcare Corp,IND,25303
+NY,MVPHP,MVP Health Plan,IND & SMG,56184
+NY,Anthem,Empire HealthChoice Assurance,SMG,44113
+NY,CDPHP HMO,Capital District Physicians' Health Plan,SMG,94788
+NY,United,Oxford Health Ins  ,SMG,85629
+OH,Centene,Buckeye Community,IND,41047
+OH,Oscar,Buckeye,IND,29341
+VA,United,Optimum Choice,IND,24251
+VA,Anthem ,Healthkeepers,SMG,88380
+VA,United,Optimum Choice,SMG,24251
+WI,WPS,Arise/WPS Health Plan Inc ,IND & SMG,84670
+WI,United,All Savers,SMG,39924
