@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from SerfScraper import SerfScraper
 from CommonDriver import Select
 from file_downloading import SerfFile
@@ -164,17 +162,38 @@ class CACDISerfScraper(SerfScraper):
         
         if files_downloaded == False: raise Exception("File not downloading!")
         else: pass
+    
+    @staticmethod
+    def __get_paths():
+        download_path = get_download_path()
+        paths = sorted(Path(download_path).iterdir(), key=os.path.getmtime)
+        
+        # exclude the folders
+        paths = [p for p in paths if '.' in str(p)]
+        # print(len(paths), len(self.serfiles))
+        return paths
+        
         
     def __download_serfile_attachment(self, i: int, base_data_dict, file_date_str):
         filing_path = f'//*[@id="report_attachments"]/div/div[1]/table/tbody/tr[{i}]/td[1]'
         download_path = f'//*[@id="report_attachments"]/div/div[1]/table/tbody/tr[{i}]/td[2]/a'
 
         # Waiting for the element to exist then finding it.
-        file_elem = self.wait_for_and_find(filing_path, tag_type='xpath')
-        download_elem = self.wait_for_and_find(download_path, tag_type='xpath')
-        download_elem.click()
-        self.__wait_for_download()
-        file_name = file_elem.text
+        for i in range(4):
+            try:
+                file_elem = self.wait_for_and_find(filing_path, tag_type='xpath')
+                file_name = file_elem.text
+                download_elem = self.wait_for_and_find(download_path, tag_type='xpath')
+                download_elem.click()
+                self.__wait_for_download()
+                break
+            except:
+                self.driver.refresh()
+                time.sleep(3)
+                
+            # File isn't downloading
+            return
+        
         base_data_dict['file_name'] = file_name
         serfile = self.create_serfile(base_data_dict)
         self.serfiles.append(serfile)
@@ -198,6 +217,18 @@ class CACDISerfScraper(SerfScraper):
         elem.click()
         time.sleep(0.5)
         
+    def __prev_page(self):
+        prev_select = '#report_attachments > div > table.t-Report-pagination.t-Report-pagination--bottom > tbody > tr > td > table > tbody > tr > td:nth-child(2) > a'
+        elem = self.wait_for_and_find(prev_select)
+        elem.click()
+        time.sleep(0.5)
+        
+    def __prev_page_protect(self):
+        try:
+            self.__prev_page()
+        except:
+            pass
+        
     def __attachments_or_reset(self):
         try:
             self.__scroll_to_attachments()
@@ -208,6 +239,7 @@ class CACDISerfScraper(SerfScraper):
     def __download_if_update(self, base_data_dict: dict, file_date_str):
         self.__attachments_or_reset()
         num_attachments = self.__get_num_attachments()
+        self.__prev_page_protect()
         
         if (num_attachments > 0) and \
             (self.__check_for_update(base_data_dict, file_date_str)):
@@ -221,6 +253,8 @@ class CACDISerfScraper(SerfScraper):
                 )
                 if (i % 15 == 0) and (num_attachments > 15):
                     self.__next_page()
+            time.sleep(3)
+            print(f"len serfiles: {len(self.serfiles)}, len paths: {len(self.__get_paths())}")
                     
         
     def __process_row(self, i: int) -> bool:
@@ -237,12 +271,7 @@ class CACDISerfScraper(SerfScraper):
             return False
             
     def __rename_serfiles_filenames(self):
-        download_path = get_download_path()
-        paths = sorted(Path(download_path).iterdir(), key=os.path.getmtime)
-        
-        # exclude the folders
-        paths = [p for p in paths if '.' in str(p)]
-        print(len(paths), len(self.serfiles))
+        paths = self.__get_paths()
         if len(paths) > 0:
             for i, x in enumerate(paths):
                 path = str(paths[i])
@@ -265,5 +294,3 @@ class CACDISerfScraper(SerfScraper):
         self.file_tracker.save_files_dict()
         self.__rename_serfiles_filenames()
         self.driver.close()
-                
-                

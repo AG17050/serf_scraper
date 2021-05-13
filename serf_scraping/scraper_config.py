@@ -5,10 +5,16 @@ accepted_groups = [
     'Individual',
     'SG-GF'
 ]
+
+non_accepted_groups = [
+    'Large Group',
+    'LG',
+    'large group'
+]
     
 accepted_status = [
     'open',
-    'actuarial review',
+    # 'actuarial review',
     'assigned',
     'closed - acknowledge receipt',
     'closed - acknowledged',

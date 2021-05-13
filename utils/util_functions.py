@@ -140,6 +140,14 @@ def standard_date(date_string):
     else:
         return ''
     
+def get_quarter(date):
+    if type(date) == str:
+        date = standard_date(date)
+    month = date.month
+    year = date.year
+    quarter = (month-1)//3 + 1
+    return f'{year}_{quarter}'
+    
 # Dictionary saving/loading functions
 def save_obj(obj, name ):
     with open(name + '.pkl', 'wb') as f:
@@ -166,4 +174,9 @@ def unzip_path(path, total_count=0):
                 os.remove(file_name)
                 total_count = unzip_path(currentdir, total_count)
 
-    
+def market_agg(string):
+    string = string.lower()
+    if 'ind' in string:
+        return 'Individual'
+    elif 'small' in string or ('s' in string and 'g' in string):
+        return 'Small Group'

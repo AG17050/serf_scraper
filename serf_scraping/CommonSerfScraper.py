@@ -9,7 +9,7 @@ from SerfScraper import SerfScraper
 from CommonDriver import Select
 from file_downloading import SerfFile
 from utils import standard_date_str, get_download_path
-from scraper_config import accepted_groups, accepted_status, insurance_types
+from scraper_config import accepted_groups, accepted_status, non_accepted_groups, insurance_types
 from file_collection import FileTracker
 from carrier_matching import CarrierMatcher
 import pandas as pd
@@ -85,7 +85,7 @@ class CommonSerfScraper(SerfScraper):
     def __set_100(self):
         # Selecting 100 rows per page
         show_selector = '#j_idt25\:filingTable_rppDD'
-        select = Select(self.wait_for_and_find(show_selector, wait_time=60))
+        select = Select(self.wait_for_and_find(show_selector, wait_time=100))
         select.select_by_visible_text('100')
     
     def __initial_setup(self):
@@ -143,16 +143,29 @@ class CommonSerfScraper(SerfScraper):
     
     @staticmethod
     def __valid_product(product_name_str: str, sub_type_str: str):
+        # in_groups = [i for i in accepted_groups if i in product_name_str.split()]
+        # if len(in_groups) > 0:
+        #     return True, in_groups[0]
+        
+        # in_subs = [i for i in accepted_groups if i in sub_type_str.split()]
+        # if len(in_subs) > 0:
+        #     return True, in_subs[0]
+        
+        # return False, ''
+        
         in_groups = [i for i in accepted_groups if i in product_name_str.split()]
-        if len(in_groups) > 0:
-            return True, in_groups[0]
-        
         in_subs = [i for i in accepted_groups if i in sub_type_str.split()]
-        if len(in_subs) > 0:
-            return True, in_subs[0]
         
-        return False, ''
+        out_groups = [i for i in non_accepted_groups if i in product_name_str.split()]
+        out_subs = [i for i in non_accepted_groups if i in sub_type_str.split()]
     
+        in_all = in_groups + in_subs
+        out_all = out_groups + out_subs
+        if len(in_all) > 0 and len(out_all) == 0:
+            return True, in_all[0]
+        else:
+            return False, None
+
     @staticmethod
     def __get_effective_date(product_name_str: str):
         """
@@ -189,7 +202,7 @@ class CommonSerfScraper(SerfScraper):
             month_list = [m for m in months_abbr if m in product_name_str]
             month = month_list[-1] if month_list else ''
         
-        eff_date = '_'.join([year, quarter, month])
+        eff_date = '_'.join([year, quarter])
         return eff_date
     
     def __gather_row_info(self, i) -> (bool, dict):
@@ -248,6 +261,7 @@ class CommonSerfScraper(SerfScraper):
         }
         
         if is_valid_product and is_valid_status:
+            print("valid row")
             return True, data_dict,
         else:
             return False, {}
@@ -418,6 +432,7 @@ class CommonSerfScraper(SerfScraper):
             if self.no_more_rows == False:
                 self.scrape_page()
                 self.next_page()
+                print('went to next page')
             else:
                 break
                 
@@ -425,7 +440,7 @@ class CommonSerfScraper(SerfScraper):
         self.file_tracker.save_files_dict()
         self.driver.close()
     
-    
+
 # url = 'https://filingaccess.serff.com/sfa/home/CO'
 # serfer = CommonSerfScraper(url)
 # serfer.scrape_website()

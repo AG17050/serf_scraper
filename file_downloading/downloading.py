@@ -9,6 +9,7 @@ from pathlib import Path
 import shutil
 import os
 from typing import List
+from utils import market_agg, get_quarter
 
 class SerfFile:
     
@@ -47,14 +48,21 @@ class SerfFile:
             'file_number': file_number,
             'file_name':file_name
         }
+        
+        self.data_dict['market'] = market_agg(self.data_dict['market'])
+        
+        if '_' not in effective_date:
+            self.data_dict['effective_date'] = get_quarter(self.data_dict['effective_date'])
 
 
 class DLRelocator:
     
     def __init__(self, serfile_list: List[SerfFile]):
         self.serfile_list = serfile_list
-        self.file_order = ['state','market','carrier','status','company',
-                           'effective_date','file_type', 'file_number']
+        # self.file_order = ['state','market','carrier','status','company',
+        #                    'effective_date','file_type', 'file_number']
+        self.file_order = ['state','status','carrier','company','market',
+                           'effective_date','file_type','file_number']
         # self.file_order = ['state','carrier','company','market',
         #                    'effective_date','file_type', 'file_number']
         self.wd = get_download_path()
@@ -62,7 +70,11 @@ class DLRelocator:
     def __get_folder_path(self, data_dict):
         folder_path = self.wd
         for comp in self.file_order:
-            folder_path = os.path.join(folder_path, data_dict[comp].replace('/','-'))
+            try:
+                folder_path = os.path.join(folder_path, data_dict[comp].replace('/','-'))
+            except:
+                print(data_dict)
+                raise(Exception("Tis Broke"))
         return folder_path
     
     @staticmethod

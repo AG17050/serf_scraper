@@ -155,6 +155,7 @@ class CADMHCSerfScraper(SerfScraper):
     def __get_file_date(self) -> str:
         date_filed_select = '#dtFiled'
         date_filed_str = self.wait_for_and_find(date_filed_select).text
+        print(f'date filed str: {date_filed_str}')
         return date_filed_str
         
     def __after_startdate(self, date_filed_str: str) -> bool:
@@ -236,6 +237,7 @@ class CADMHCSerfScraper(SerfScraper):
                     base_data_dict,
                     file_date_str
                 )
+            time.sleep(2)
     
     def __process_row(self, i: int):
         url = self.filing_urls[i]
@@ -274,7 +276,7 @@ class CADMHCSerfScraper(SerfScraper):
                 break_counter += 1
                 if break_counter == 3:
                     break
-        time.sleep(15)
+        time.sleep(30)
             
         self.file_tracker.save_files_dict()
         self.__rename_serfiles_filenames()
