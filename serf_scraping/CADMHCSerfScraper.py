@@ -123,6 +123,7 @@ class CADMHCSerfScraper(SerfScraper):
         market = self.wait_for_and_find(market_select).text
         status = self.wait_for_and_find(status_select).text
         effective_date = self.wait_for_and_find(effective_date_select).text
+        effective_date = standard_date_str(effective_date)
         
         state = 'CA_dmhc'
         carrier = self.__get_carrier(plan_name_str)

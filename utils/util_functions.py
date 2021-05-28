@@ -146,7 +146,7 @@ def get_quarter(date):
     month = date.month
     year = date.year
     quarter = (month-1)//3 + 1
-    return f'{year}_{quarter}'
+    return f'{year}_Q{quarter}'
     
 # Dictionary saving/loading functions
 def save_obj(obj, name ):

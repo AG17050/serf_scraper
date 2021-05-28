@@ -10,11 +10,13 @@ from CommonDriver import Select
 from file_downloading import SerfFile
 from utils import standard_date_str, get_download_path
 from scraper_config import accepted_groups, accepted_status, non_accepted_groups, insurance_types
+from selenium.webdriver.common.keys import Keys
 from file_collection import FileTracker
 from carrier_matching import CarrierMatcher
 import pandas as pd
 import os
 import time
+import math
 
 class CommonSerfScraper(SerfScraper):
     
@@ -44,7 +46,7 @@ class CommonSerfScraper(SerfScraper):
     
     def __select_business_type(self):
         business_selector = "#simpleSearch\:businessType_label"
-        select = self.wait_for_and_find(business_selector)
+        select = self.wait_for_and_find(business_selector, wait_time=10)
         select.click()
         
         business_selector = "#simpleSearch\:businessType_panel > div > ul > li:nth-child(3)"
@@ -56,7 +58,7 @@ class CommonSerfScraper(SerfScraper):
         select = self.wait_for_and_find(insurance_selector, wait_time=40)
         select.click()
         
-        for i in range(1,300):
+        for i in range(1,120):
             try:
                 ins_path = '//*[@id="simpleSearch:availableTois_panel"]/div[2]/ul/li[{}]/label'.format(i)
                 ins = self.wait_for_and_find(ins_path, tag_type='xpath')
@@ -165,9 +167,87 @@ class CommonSerfScraper(SerfScraper):
             return True, in_all[0]
         else:
             return False, None
-
+        
     @staticmethod
-    def __get_effective_date(product_name_str: str):
+    def __try_m_y_format(product_name_str: str):
+        def numeric_hyphen(string):
+            if '-' in string:
+                substring = string.replace('-','')
+                return substring.isnumeric()
+        
+        str_list = product_name_str.split()
+        numeric_hyphen_strs = [s for s in str_list if numeric_hyphen(s)]
+        date_str = numeric_hyphen_strs[0]
+
+        hyphen_idx = date_str.find('-')
+        left = date_str[:hyphen_idx]; right = date_str[hyphen_idx+1:]
+        if int(right) > int(left):
+            return f'{int(left)}_{int(right)}_'
+        
+        return ''
+        
+    @staticmethod
+    def __try_qy_format(product_name_str: str):
+        str_list = product_name_str.split()
+        qy_strs = [s for s in str_list if 'q' in s and '2' in s]
+        
+        if len(qy_strs) > 0:
+            qy_str = qy_strs[0]
+            q_idx = qy_str.find('q')
+            year = qy_str[q_idx + 1:]
+            year = '20' + year if len(year) == 2 else year
+            quarter = qy_str[:q_idx]
+            return f'{year}_{quarter}_'
+        else:
+            return ''
+        
+    @staticmethod
+    def __get_numeric_year(product_name_str: str):
+        years = ['2018','2019','2020','2021','2022','2023','2024']
+        found_years = [y for y in years if y in product_name_str]
+        if len(found_years) > 0:
+            found_year = found_years[0]
+            year_idx = product_name_str.find(found_year)
+            return found_year, year_idx
+        else:
+            return '',-1
+    
+    @staticmethod
+    def __get_numeric_month(product_name_str: str, year_idx: int):
+        months = [str(x) for x in list(range(1,12))]
+        months += ['01','02','03','04','05','06','07','08','09']
+        
+        found_months = [m for m in months if m in product_name_str]
+        found_month = ''
+        for m in found_months:
+            m_idx = product_name_str.find(m)
+            idx_diff = m_idx - year_idx
+            
+            if (idx_diff < 0 and abs(idx_diff) >= len(m)) \
+            or (idx_diff >= 4):
+                found_month = m
+                break
+            
+        return found_month
+            
+            
+    @staticmethod
+    def __try_standard_date(product_name_str: str):
+        if '/' in product_name_str:
+            try:
+                str_list = product_name_str.split(' ')
+                date_str = [s for s in str_list if '/' in s and len(s) > 4][0]
+                eff_date = standard_date_str(date_str)
+                return eff_date
+            except Exception as e:
+                print("standard date error!!!")
+                print(e)
+                return ''
+        else:
+            return ''
+        
+
+    def get_effective_date(self, product_name_str: str):
         """
         
 
@@ -182,28 +262,25 @@ class CommonSerfScraper(SerfScraper):
             DESCRIPTION.
 
         """
-        years = ['2019','2020','2021','2022']
-        quarters = ['q1','q2','q3','q4']
-        months = ['january','february','march','april','may','june','july',
-                  'august','september','october','november','december']
-        months_abbr = ['jan','feb','mar','apr','may','jun','jul','aug',
-                       'sep','oct','nov','dec']
+        product_name_str = product_name_str.lower()
         
-        year_list = [y for y in years if y in product_name_str]
-        year = year_list[-1] if year_list else ''
-    
-        quarter_list = [q for q in quarters if q in product_name_str]
-        quarter = quarter_list[-1] if quarter_list else ''
+        eff_date = self.__try_standard_date(product_name_str)
+        if eff_date != '':
+            return eff_date
         
-        month_list = [m for m in months if m in product_name_str]
-        month = month_list[-1] if month_list else ''
+        eff_date = self.__try_qy_format(product_name_str)
+        if eff_date != '':
+            return eff_date
+        else:
+            quarter = ''
         
-        if month == '':
-            month_list = [m for m in months_abbr if m in product_name_str]
-            month = month_list[-1] if month_list else ''
+        year, yr_idx = self.__get_numeric_year(product_name_str)
+        if year == '':
+            return '__'
         
-        eff_date = '_'.join([year, quarter])
-        return eff_date
+        month = self.__get_numeric_month(product_name_str, yr_idx)
+        
+        return f'{year}_{quarter}_{month}'
     
     def __gather_row_info(self, i) -> (bool, dict):
         """
@@ -244,8 +321,9 @@ class CommonSerfScraper(SerfScraper):
         
         current_path = get_download_path()  
 
-        effective_date = self.__get_effective_date(self.wait_for_and_find(
+        effective_date = self.get_effective_date(self.wait_for_and_find(
             prod_name_path, tag_type='xpath').text)
+        # effective_date = self.__effective_date
         
         data_dict = {
             'state':self.state,
@@ -413,8 +491,53 @@ class CommonSerfScraper(SerfScraper):
                 self.no_more_rows = True
                 print('No More Rows in Page.', e)
                 break
-            
+                
         print("Finished page.")
+        
+    # @staticmethod
+    # def get_effective_dates():
+    #     q_to_m = {
+    #         1:1,
+    #         2:4,
+    #         3:7,
+    #         4:10
+    #     }
+    #     df = pd.read_csv('serf_effective_dates_SG.txt')
+    #     df['start date'] = df.apply(lambda x: f"{q_to_m[x['quarter']]}/1/{x['year']}", axis=1)
+    #     df['end date'] = df.apply(lambda x: f"{q_to_m[x['quarter']]+2}/1/{x['year']}", axis=1)
+    #     return df[['start date','end date']]
+    
+    # def set_effective_date(self, start_date, end_date):
+    #     setting_url = 'https://filingaccess.serff.com/sfa/search/filingSearch.xhtml'
+    #     self.driver.get(setting_url)
+    #     start_selector = '#simpleSearch\:dispositionStartDate_input'
+    #     end_selector = '#simpleSearch\:dispositionEndDate_input'
+        
+    #     start_date_input = self.driver.find_element_by_css_selector(start_selector)
+    #     start_date_input.send_keys(Keys.CONTROL, 'a')
+    #     start_date_input.send_keys(Keys.BACKSPACE)
+    #     start_date_input.send_keys(start_date)
+        
+    #     end_date_input = self.driver.find_element_by_css_selector(end_selector)
+    #     end_date_input.send_keys(Keys.CONTROL, 'a')
+    #     end_date_input.send_keys(Keys.BACKSPACE)
+    #     end_date_input.send_keys(end_date)
+        
+    #     self.__effective_date = start_date
+    #     self.__submit_search()
+    #     self.__set_100()
+        
+    # def scrape_filings(self):
+    #     self.num_pages = self.__find_num_pages()
+    #     for page_num in range(self.num_pages):
+            
+    #         if self.no_more_rows == False:
+    #             self.scrape_page()
+    #             self.next_page()
+    #             print('went to next page')
+    #         else:
+    #             break
+    #     time.sleep(10)
         
     def scrape_website(self):
         """
@@ -425,8 +548,15 @@ class CommonSerfScraper(SerfScraper):
         None.
 
         """
-        self.num_pages = self.__find_num_pages()
+        # eff_dates_df = self.get_effective_dates()
+        # for row in eff_dates_df.iterrows():
+        #     start_date = row[1]['start date']
+        #     end_date = row[1]['end date']
+        #     self.set_effective_date(start_date, end_date)
         
+        #     self.scrape_filings()
+        
+        self.num_pages = self.__find_num_pages()
         for page_num in range(self.num_pages):
             
             if self.no_more_rows == False:
@@ -435,7 +565,7 @@ class CommonSerfScraper(SerfScraper):
                 print('went to next page')
             else:
                 break
-                
+
         time.sleep(30)
         self.file_tracker.save_files_dict()
         self.driver.close()

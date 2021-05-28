@@ -51,9 +51,22 @@ class SerfFile:
         
         self.data_dict['market'] = market_agg(self.data_dict['market'])
         
-        if '_' not in effective_date:
+        if '_' in self.data_dict['effective_date']: # not just year__
+            # Assumes a format of 'year_quarter_month'
+            print(self.data_dict['effective_date'])
+            str_split = self.data_dict['effective_date'].split('_')
+            year = str_split[0]
+            
+            quarter = str_split[1]
+            if quarter != '':
+                self.data_dict['effective_date'] = f'{year}_Q{quarter}'
+                
+            month = str_split[2].zfill(2)
+            if month != '00':
+                self.data_dict['effective_date'] = get_quarter(f'{month}/01/{year}')
+        
+        elif '/' in self.data_dict['effective_date']:
             self.data_dict['effective_date'] = get_quarter(self.data_dict['effective_date'])
-
 
 class DLRelocator:
     
