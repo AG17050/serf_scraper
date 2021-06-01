@@ -19,10 +19,12 @@ class FileCollector:
         download_path = get_download_path()
         dl_files = os.listdir(download_path)
         
-        if len(dl_files) > 0:
+        if dl_files == ['Moved_Downloads_Content']:
+            pass
+        elif len(dl_files) > 0:
             dl_storage = os.path.join(download_path, 'Moved_Downloads_Content')
-            try: create_folder(dl_storage) 
-            except: pass
+            if 'Moved_Downloads_Content' not in dl_files:
+                create_folder(dl_storage) 
             move_files_to_folder(download_path, dl_storage)
             print("Moved old files into folder: 'Moved_Downloads_Content'")
             

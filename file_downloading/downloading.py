@@ -72,12 +72,8 @@ class DLRelocator:
     
     def __init__(self, serfile_list: List[SerfFile]):
         self.serfile_list = serfile_list
-        # self.file_order = ['state','market','carrier','status','company',
-        #                    'effective_date','file_type', 'file_number']
         self.file_order = ['state','market','carrier','company','effective_date',
                            'status','file_type','file_number']
-        # self.file_order = ['state','carrier','company','market',
-        #                    'effective_date','file_type', 'file_number']
         self.wd = get_download_path()
         
     def __get_folder_path(self, data_dict):

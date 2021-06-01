@@ -173,7 +173,7 @@ def unzip_path(path, total_count=0):
                     zipObj.extractall(currentdir)
                 os.remove(file_name)
                 total_count = unzip_path(currentdir, total_count)
-
+        
 def market_agg(string):
     string = string.lower()
     if 'ind' in string:

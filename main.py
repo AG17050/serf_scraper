@@ -5,10 +5,13 @@ Created on Wed Apr  7 12:47:56 2021
 @author: AG17050
 """
 import os
+from zipfile import ZipFile
+import shutil
 import pandas as pd
-from serf_scraping import CommonSerfScraper, CACDISerfScraper, CADMHCSerfScraper, NYSerfScraper
+from serf_scraping import CommonSerfScraper, CACDISerfScraper, CADMHCSerfScraper #, NYSerfScraper
 from file_collection import FileCollector
-from utils import get_download_path, unzip_path
+from utils import get_download_path, unzip_path, get_quarter
+from pdf_parsing import find_pdf_effective_date
 
 def get_serf_states_to_run():
     serf_sites = [
@@ -73,18 +76,38 @@ def get_ca_dmhc_serf_collection():
     else:
         return []
 
-# def get_ny_serf_collection():
-#     df = pd.read_csv('serf_states_to_run.csv')
-#     ny_val = df[df['State'] == 'NY']['Run'].values[0]
+def temp_unzip_pdf(file) -> str:
+    download_path = get_download_path()
+    temp_path = os.path.join(download_path, 'temp')
+    if os.path.exists(temp_path):
+        shutil.rmtree(temp_path, ignore_errors=True)
+    os.mkdir(temp_path)
+        
+    with ZipFile(file) as zipObj:
+        zipObj.extractall(temp_path)
     
-#     if ny_val == 'Yes':
-#         ny_scraper = NYSerfScraper()
-#         ny_scraper.scrape_website()
-#         collected_serfiles = ny_scraper.serfiles
-#         return collected_serfiles
-#     else:
-#         return []
+    pdf_file = [f for f in os.listdir(temp_path) if f .endswith('.pdf')][0]
+    pdf_file = os.path.join(temp_path, pdf_file)
+    return pdf_file
     
+
+def get_zip_eff_date(zip_file_name):
+    download_path = get_download_path()
+    file = os.path.join(download_path, zip_file_name)
+    pdf_file = temp_unzip_pdf(file)
+    effective_date = find_pdf_effective_date(pdf_file)
+    return effective_date
+
+def rename_serfile_eff_dates(serfiles):
+    for i, file in enumerate(serfiles):
+        zip_file_name = file.data_dict['file_name']
+        effective_date = get_zip_eff_date(zip_file_name)
+        
+        if effective_date != '':
+            effective_date = get_quarter(effective_date)
+            serfiles[i].data_dict['effective_date'] = effective_date
+            
+    return serfiles
 
 def unzip_downloads():
     download_path = get_download_path()
@@ -92,7 +115,8 @@ def unzip_downloads():
         unzip_path(download_path)
     except:
         print('Finished unzipping folders.')
-    
+        
+
 def main():
     collector = FileCollector()
     collector.move_old_dl_files()
@@ -104,9 +128,10 @@ def main():
     collector.relocate_files(serfiles)
     
     serfiles = get_common_serf_collection()
+    serfiles = rename_serfile_eff_dates(serfiles)
     collector.relocate_files(serfiles)
     
-    unzip_downloads()
+    # unzip_downloads()
     
 if __name__ == '__main__':
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
