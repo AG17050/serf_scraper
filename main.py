@@ -131,7 +131,7 @@ def main():
     serfiles = rename_serfile_eff_dates(serfiles)
     collector.relocate_files(serfiles)
     
-    # unzip_downloads()
+    unzip_downloads()
     
 if __name__ == '__main__':
     os.chdir(os.path.dirname(os.path.abspath(__file__)))

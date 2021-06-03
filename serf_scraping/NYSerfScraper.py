@@ -19,7 +19,7 @@ months = ['January','February','March','April','May','June',
 class NYSerfScraper(SerfScraper):
     
     def __init__(self):
-        url = 'https://myportal.dfs.ny.gov/web/prior-approval/aetna-health-inc.-ny-'
+        url = 'https://myportal.dfs.ny.gov/web/prior-approval/rate-applications-by-company'
         super().__init__(url)
         self.__set_submission_date()
         
@@ -46,72 +46,37 @@ class NYSerfScraper(SerfScraper):
         date_obj = datetime.strptime(date_str, '%B %d %Y')
         return date_obj
         
-    def get_approved_row_date(self, i, app_type='approved'):
-        xpath = f'//*[@id="portlet_56_INSTANCE_Qdc0BbdFovOv"]/div/div/div/div[1]/div[3]/ul/li/ul/li[{i}]/a'
-        elem = self.wait_for_and_find(xpath)
-        text = elem.text
-        date_obj = self.extract_date_from_text(text)
-        return date_obj
-    
-    def get_application_urls(self, i, app_type='approved'):
-        urls = []
-        for j in range(1, 500):
-            if app_type == 'approved':
-                try:
-                    xpath = f'//*[@id="portlet_56_INSTANCE_Qdc0BbdFovOv"]/div/div/div/div[1]/div[3]/ul/li/ul/li[{i}]/ul/li[{j}]/a'
-                    url = self.get_xpath_href(xpath)
-                except:
-                    break
-                
-            elif app_type == 'pending':
-                xpath = f'//*[@id="portlet_56_INSTANCE_5UaY"]/div/div/div/div[2]/div[1]/ul/li/ul/li[{i}]/a'
-                url = self.get_xpath_href(xpath)
-                
-            urls.append(url)
-            print(f"len of urls: {len(urls)}")
-        return urls
-    
-    def get_xpath_href(self, xpath):
-        url_elem = self.wait_for_and_find(xpath, tag_type='xpath')
-        url = url_elem.get_attribute("href")
-        return url
-    
-    def gather_application_hrefs(self):
-        for i in range(1, 500):
-            date_obj = self.get_approved_row_date(i)
-            if date_obj > self.start_date:
-                self.get_application_urls(i)
-                
-            self.get_application_urls(i, app_type='pending')
-    
-    def __scroll_to_xpath(self, xpath):
-        elem = self.wait_for_and_find(xpath, tag_type='xpath', wait_time=5)
-        time.sleep(0.1)
-        self.driver.execute_script("arguments[0].scrollIntoView();", elem)
+    def get_company_hrefs(self):
+        hrefs = []
         
-    def gather_carrier_href(self, i):
-        path = f'//*[@id="portlet_71_INSTANCE_9Q5y"]/div/div/div/div/ul/li[1]/ul/li[{i}]/a'
-        self.__scroll_to_xpath(path)
-        row_href = self.get_xpath_href(path)
-        self.row_urls.append(row_href)
+        list_path = "//ul[contains(@class,'layouts level-1')]"
+        list_elem = self.wait_for_and_find(list_path, tag_type='xpath')
+        for child in list_elem.find_elements_by_xpath(".//*"):
+            href = child.get_attribute("href")
+            if href is not None:
+                hrefs.append(href)
+                
+        return hrefs
     
-    def gather_all_hrefs(self):
-        for i in range(1, 500):
-            try: self.gather_carrier_href(i)
-            except: break
-        for url in self.row_urls:
-            self.driver.get(url)
-            self.gather_application_hrefs()
-    
-    # def hover_over_id(self, selector):
-    #     elem = self.wait_for_and_find(selector)
-    #     hover = ActionChains(self.driver).move_to_element(elem)
-    #     hover.perform()
+    def get_application_hrefs(self):
+        hrefs = []
         
+        elems = scraper.driver.find_elements_by_tag_name("a")
+        for elem in elems:
+            try:
+                href = elem.get_attribute("href")
+                if href is not None and href[-5:].isnumeric():
+                    hrefs.append(href)
+            except:
+                pass
+        
+        return hrefs
+    
     def create_serfile(self):
         pass
     
     def scrape_website(self):
         self.gather_all_hrefs()
-        
+
+scraper = NYSerfScraper()
         
