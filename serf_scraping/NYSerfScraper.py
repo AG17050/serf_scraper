@@ -78,5 +78,4 @@ class NYSerfScraper(SerfScraper):
     def scrape_website(self):
         self.gather_all_hrefs()
 
-scraper = NYSerfScraper()
         
