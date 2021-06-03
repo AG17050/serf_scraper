@@ -2,3 +2,4 @@ __pycache__/
 matches.txt
 file_collection/downloaded_files.pkl
 downloaded_files.pkl
+*.pkl
