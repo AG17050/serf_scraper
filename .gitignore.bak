@@ -3,6 +3,3 @@ matches.txt
 file_collection/downloaded_files.pkl
 downloaded_files.pkl
 *.pkl
-serf_states_to_run.csv
-serf_submission_dates.txt
-matches.txt

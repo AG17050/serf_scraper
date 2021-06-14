@@ -41,8 +41,7 @@ accepted_status = [
     'recieved',
     'recieved-ar',
     'recommended for certification',
-    'review pending',
-    '(20) exam'
+    'review pending'
 ]
 
 accepted_types = [
