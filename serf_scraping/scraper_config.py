@@ -14,7 +14,8 @@ non_accepted_groups = [
     
 accepted_status = [
     'open',
-    # 'actuarial review',
+    'actuarial review',
+    'under actuarial review',
     'assigned',
     'closed - acknowledge receipt',
     'closed - acknowledged',
@@ -42,7 +43,8 @@ accepted_status = [
     'recieved-ar',
     'recommended for certification',
     'review pending',
-    '(20) exam'
+    '(20) exam',
+    '(15) open-under review by analyst'
 ]
 
 accepted_types = [
