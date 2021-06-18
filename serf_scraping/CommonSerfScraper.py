@@ -22,6 +22,7 @@ class CommonSerfScraper(SerfScraper):
     
     def __init__(self, url):
         super().__init__(url)
+        print("running for url: ",  url)
         self.__initial_setup()
         
         self.num_pages = None
@@ -71,7 +72,6 @@ class CommonSerfScraper(SerfScraper):
     def __select_start_date(self):
         dates_data = pd.read_csv('serf_submission_dates.txt')
         start_date = dates_data['Start Date'][0]
-        # self.compare_date = dates_data['Compare Date'][0]
         print(f"Using start date: {start_date}")
     
         # Sending the start date
@@ -127,7 +127,6 @@ class CommonSerfScraper(SerfScraper):
         None.
 
         """
-        #self.driver.find_element_by_tag_name('body').send_keys(Keys.CONTROL + Keys.HOME)
         self.driver.execute_script("window.scroll(0, 0);")
         next_selector = '#j_idt25\:filingTable_paginator_top > span.ui-paginator-next.ui-state-default.ui-corner-all'
         next_elem = self.wait_for_and_find(next_selector)
@@ -144,17 +143,7 @@ class CommonSerfScraper(SerfScraper):
         return status_str in accepted_status
     
     @staticmethod
-    def __valid_product(product_name_str: str, sub_type_str: str):
-        # in_groups = [i for i in accepted_groups if i in product_name_str.split()]
-        # if len(in_groups) > 0:
-        #     return True, in_groups[0]
-        
-        # in_subs = [i for i in accepted_groups if i in sub_type_str.split()]
-        # if len(in_subs) > 0:
-        #     return True, in_subs[0]
-        
-        # return False, ''
-        
+    def __valid_product(product_name_str: str, sub_type_str: str):        
         in_groups = [i for i in accepted_groups if i in product_name_str.split()]
         in_subs = [i for i in accepted_groups if i in sub_type_str.split()]
         
@@ -395,11 +384,7 @@ class CommonSerfScraper(SerfScraper):
         date_selector = '#j_idt28_content > div:nth-child(1) > div:nth-child(1) > div:nth-child(7) > div'
         sub_date = self.__try_getting_date(date_selector)
         sub_date = standard_date_str(sub_date)
-        # dates_dict =  {
-        #     'last_status_date':last_status_date,
-        #     'dispose_date':dispose_date,
-        #     'sub_date':sub_date
-        # }
+
         dates_list = [last_status_date, dispose_date, sub_date]
         date = [d for d in dates_list if d != ''][0]
         return date
@@ -486,58 +471,11 @@ class CommonSerfScraper(SerfScraper):
                 self.inspect_row(i)
                 
             except Exception as e:
-                # raise e
-                # print(e)
                 self.no_more_rows = True
                 print('No More Rows in Page.', e)
                 break
                 
         print("Finished page.")
-        
-    # @staticmethod
-    # def get_effective_dates():
-    #     q_to_m = {
-    #         1:1,
-    #         2:4,
-    #         3:7,
-    #         4:10
-    #     }
-    #     df = pd.read_csv('serf_effective_dates_SG.txt')
-    #     df['start date'] = df.apply(lambda x: f"{q_to_m[x['quarter']]}/1/{x['year']}", axis=1)
-    #     df['end date'] = df.apply(lambda x: f"{q_to_m[x['quarter']]+2}/1/{x['year']}", axis=1)
-    #     return df[['start date','end date']]
-    
-    # def set_effective_date(self, start_date, end_date):
-    #     setting_url = 'https://filingaccess.serff.com/sfa/search/filingSearch.xhtml'
-    #     self.driver.get(setting_url)
-    #     start_selector = '#simpleSearch\:dispositionStartDate_input'
-    #     end_selector = '#simpleSearch\:dispositionEndDate_input'
-        
-    #     start_date_input = self.driver.find_element_by_css_selector(start_selector)
-    #     start_date_input.send_keys(Keys.CONTROL, 'a')
-    #     start_date_input.send_keys(Keys.BACKSPACE)
-    #     start_date_input.send_keys(start_date)
-        
-    #     end_date_input = self.driver.find_element_by_css_selector(end_selector)
-    #     end_date_input.send_keys(Keys.CONTROL, 'a')
-    #     end_date_input.send_keys(Keys.BACKSPACE)
-    #     end_date_input.send_keys(end_date)
-        
-    #     self.__effective_date = start_date
-    #     self.__submit_search()
-    #     self.__set_100()
-        
-    # def scrape_filings(self):
-    #     self.num_pages = self.__find_num_pages()
-    #     for page_num in range(self.num_pages):
-            
-    #         if self.no_more_rows == False:
-    #             self.scrape_page()
-    #             self.next_page()
-    #             print('went to next page')
-    #         else:
-    #             break
-    #     time.sleep(10)
         
     def scrape_website(self):
         """
@@ -548,13 +486,6 @@ class CommonSerfScraper(SerfScraper):
         None.
 
         """
-        # eff_dates_df = self.get_effective_dates()
-        # for row in eff_dates_df.iterrows():
-        #     start_date = row[1]['start date']
-        #     end_date = row[1]['end date']
-        #     self.set_effective_date(start_date, end_date)
-        
-        #     self.scrape_filings()
         
         self.num_pages = self.__find_num_pages()
         for page_num in range(self.num_pages):

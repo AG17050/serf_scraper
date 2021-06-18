@@ -1,6 +1,6 @@
 State,Run
 CA,No
-CO,Yes
+CO,No
 CT,No
 GA,No
 IN,No
@@ -10,4 +10,4 @@ MO,No
 NV,No
 NH,No
 OH,No
-VA,No
+VA,Yes

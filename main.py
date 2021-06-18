@@ -104,6 +104,7 @@ def rename_serfile_eff_dates(serfiles):
         effective_date = get_zip_eff_date(zip_file_name)
         
         if effective_date != '':
+            print(effective_date)
             effective_date = get_quarter(effective_date)
             serfiles[i].data_dict['effective_date'] = effective_date
             
@@ -115,7 +116,6 @@ def unzip_downloads():
         unzip_path(download_path)
     except:
         print('Finished unzipping folders.')
-        
 
 def main():
     collector = FileCollector()
@@ -131,7 +131,11 @@ def main():
     serfiles = rename_serfile_eff_dates(serfiles)
     collector.relocate_files(serfiles)
     
-    unzip_downloads()
+    downloads_path = get_download_path()
+    path = os.path.join(downloads_path, 'temp')
+    
+    if os.path.exists(path):
+        shutil.rmtree(path)
     
 if __name__ == '__main__':
     os.chdir(os.path.dirname(os.path.abspath(__file__)))

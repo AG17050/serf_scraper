@@ -125,6 +125,10 @@ def standard_date(date_string):
         - check_row_validity
         - download_zips
     """
+    if "destruction" in date_string:
+        idx = date_string.find("destruction")
+        date_string = date_string[:idx]
+        
     yi = date_string.rfind('/') + 1
     if len(date_string[yi:]) > 2:
         date_string = date_string[:yi] + date_string[yi+2:]
