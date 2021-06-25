@@ -14,6 +14,14 @@ def find_page_text(pdf_reader, text) -> str:
             return page_text
     return None
     
+def find_string_subtext(page_text, string) -> str:
+    idx = page_text.rfind(string)
+    subtext = page_text[idx:]
+    
+    idx = subtext.find('serff tracking')
+    subtext = subtext[:idx]
+    return subtext
+    
 def find_effective_date(page_text) -> str:
     idx = page_text.rfind('effective date')
     subtext = page_text[idx:]
@@ -21,12 +29,16 @@ def find_effective_date(page_text) -> str:
     idx = subtext.find('serff tracking')
     subtext = subtext[:idx]
     
-    if '/' not in subtext:
-        return ''
-    else:
-        date_idx = subtext.find('/') - 2
-        date_str = subtext[date_idx:]
-        return date_str
+    strings = ['effective date', 'requested']
+    for string in strings:
+        subtext = find_string_subtext(page_text, string)
+        if '/' not in subtext:
+            continue
+        else:
+            date_idx = subtext.find('/') - 2
+            date_str = subtext[date_idx:date_idx + 10]
+            return date_str
+    return ''
 
 def find_pdf_effective_date(file_path):
     fhandle = open(file_path, 'rb')

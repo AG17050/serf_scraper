@@ -134,6 +134,8 @@ def main():
     downloads_path = get_download_path()
     path = os.path.join(downloads_path, 'temp')
     
+    unzip_downloads()
+    
     if os.path.exists(path):
         shutil.rmtree(path)
     
