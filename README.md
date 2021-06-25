@@ -8,3 +8,4 @@ You also need to make sure you have the necessary chromedriver in the main folde
 https://chromedriver.chromium.org/downloads
 
 `"C:/Users/<username>/AppData/Local/conda/conda/envs/<virtualenv>/python.exe" "C:/Users/<username>/OneDrive - Anthem/Desktop/serf_scraper/main.py"`
+edit
