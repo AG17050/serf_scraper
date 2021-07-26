@@ -54,7 +54,7 @@ def get_common_serf_collection(collector):
         
         # Renaming and relocating
         serfiles = rename_serfile_eff_dates(serfiles)
-        collector.relocate(serfiles)
+        collector.relocate_files(serfiles)
     
     return collected_serfiles
         
