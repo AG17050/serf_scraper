@@ -133,9 +133,9 @@ def main():
     serfiles = get_ca_dmhc_serf_collection()
     collector.relocate_files(serfiles)
     
-    serfiles = get_common_serf_collection()
-    serfiles = rename_serfile_eff_dates(serfiles)
-    collector.relocate_files(serfiles)
+    serfiles = get_common_serf_collection(collector)
+    # serfiles = rename_serfile_eff_dates(serfiles)
+    # collector.relocate_files(serfiles)
     
     downloads_path = get_download_path()
     path = os.path.join(downloads_path, 'temp')
