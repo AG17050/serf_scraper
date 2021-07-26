@@ -41,14 +41,20 @@ def get_serf_states_to_run():
             states_to_run[state] = state_serf_site_dict[state]
     return states_to_run
             
-def get_common_serf_collection():
+def get_common_serf_collection(collector):
     states_to_run = get_serf_states_to_run()
     collected_serfiles = []
     
     for state, url in states_to_run.items():
+        print(state, url)
         serfer = CommonSerfScraper(url)
         serfer.scrape_website()
-        collected_serfiles += serfer.serfiles
+        serfiles = serfer.serfiles
+        collected_serfiles += serfiles
+        
+        # Renaming and relocating
+        serfiles = rename_serfile_eff_dates(serfiles)
+        collector.relocate(serfiles)
     
     return collected_serfiles
         
