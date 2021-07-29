@@ -238,7 +238,7 @@ class CADMHCSerfScraper(SerfScraper):
                     base_data_dict,
                     file_date_str
                 )
-            time.sleep(2)
+            time.sleep(10)
     
     def __process_row(self, i: int):
         url = self.filing_urls[i]
@@ -253,10 +253,11 @@ class CADMHCSerfScraper(SerfScraper):
         else:
             return False
 
-    def __rename_serfiles_filenames(self):
+    def rename_serfiles_filenames(self):
         download_path = get_download_path()
-        paths = sorted(Path(download_path).iterdir(), key=os.path.getmtime)
-        
+        # paths = sorted(Path(download_path).iterdir(), key=os.path.getmtime, reverse=False)
+        paths = os.listdir(download_path)
+        paths = [os.path.join(download_path, p) for p in paths]
         # exclude the foldersr
         paths = [p for p in paths if '.' in str(p)]
         print(len(paths), len(self.serfiles))
@@ -280,5 +281,5 @@ class CADMHCSerfScraper(SerfScraper):
         time.sleep(30)
             
         self.file_tracker.save_files_dict()
-        self.__rename_serfiles_filenames()
+        self.rename_serfiles_filenames()
         self.driver.close()
