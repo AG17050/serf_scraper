@@ -41,6 +41,8 @@ accepted_status = [
     'pending state action',
     'recieved',
     'recieved-ar',
+    'received',
+    'received-ar',
     'recommended for certification',
     'review pending',
     '(20) exam',

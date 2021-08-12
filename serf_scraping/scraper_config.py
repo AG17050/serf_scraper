@@ -45,6 +45,7 @@ accepted_status = [
     'received-ar',
     'recommended for certification',
     'review pending',
+    'review completed',
     '(20) exam',
     '(15) open-under review by analyst'
 ]
