@@ -255,11 +255,9 @@ class CADMHCSerfScraper(SerfScraper):
 
     def rename_serfiles_filenames(self):
         download_path = get_download_path()
-        # paths = sorted(Path(download_path).iterdir(), key=os.path.getmtime, reverse=False)
-        paths = os.listdir(download_path)
-        paths = [os.path.join(download_path, p) for p in paths]
-        # exclude the foldersr
-        paths = [p for p in paths if '.' in str(p)]
+        paths = [os.path.join(download_path, p) 
+                 for p in os.listdir(download_path) 
+                 if '.' in str(p)]
         print(len(paths), len(self.serfiles))
         if len(paths) > 0:
             for i, x in enumerate(paths):
