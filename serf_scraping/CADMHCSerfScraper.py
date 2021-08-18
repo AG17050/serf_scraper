@@ -36,10 +36,9 @@ class CADMHCSerfScraper(SerfScraper):
     def __select_market_type(self):
         button_select = '#MainContentBody > article > div > div:nth-child(3) > div > div > div.filterbox.panel-heading > div > div:nth-child(3) > div > button'
         self.wait_for_and_find(button_select).click()
-        
         ind_select = '#bs-select-2-0'
         self.wait_for_and_find(ind_select).click()
-        sg_select = '#bs-select-2-3'
+        sg_select = '#bs-select-2-2'
         self.wait_for_and_find(sg_select).click()
         
     def __select_filing_status(self):
