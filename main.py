@@ -46,7 +46,7 @@ def get_common_serf_collection(collector):
     collected_serfiles = []
     
     for state, url in states_to_run.items():
-        print(state, url)
+        print('RUNNINGI FOR: {state} {url}')
         serfer = CommonSerfScraper(url)
         serfer.scrape_website()
         serfiles = serfer.serfiles
@@ -127,8 +127,8 @@ def main():
     collector = FileCollector()
     collector.move_old_dl_files()
     
-    serfiles = get_ca_cdi_serf_collection()
-    collector.relocate_files(serfiles)
+    # serfiles = get_ca_cdi_serf_collection()
+    # collector.relocate_files(serfiles)
     
     serfiles = get_ca_dmhc_serf_collection()
     collector.relocate_files(serfiles)

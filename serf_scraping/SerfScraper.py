@@ -18,7 +18,7 @@ class SerfScraper(ABC):
         self.driver.get(url); self.driver.maximize_window()
         self.serfiles = []
         
-    def wait_for_and_find(self, tag: str, tag_type="selector", wait_time=15):
+    def wait_for_and_find(self, tag: str, tag_type="selector", wait_time=30):
         """
         Automatically give time for an element to render and then select it.
 
