@@ -498,7 +498,6 @@ class CommonSerfScraper(SerfScraper):
                 break
 
         time.sleep(30)
-        self.file_tracker.save_files_dict()
         self.driver.close()
     
 
