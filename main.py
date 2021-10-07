@@ -87,7 +87,10 @@ def temp_unzip_pdf(file) -> str:
     temp_path = os.path.join(download_path, 'temp')
     if os.path.exists(temp_path):
         shutil.rmtree(temp_path, ignore_errors=True)
-    os.mkdir(temp_path)
+    try:
+        os.mkdir(temp_path)
+    except:
+        pass
         
     with ZipFile(file) as zipObj:
         zipObj.extractall(temp_path)
