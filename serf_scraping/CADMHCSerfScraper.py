@@ -154,7 +154,7 @@ class CADMHCSerfScraper(SerfScraper):
     
     def __get_file_date(self) -> str:
         date_filed_select = '#dtFiled'
-        date_filed_str = self.wait_for_and_find(date_filed_select).text
+        date_filed_str = self.wait_for_and_find(date_filed_select, wait_type='visible').text
         print(f'date filed str: {date_filed_str}')
         return date_filed_str
         

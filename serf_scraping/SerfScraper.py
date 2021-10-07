@@ -18,10 +18,12 @@ class SerfScraper(ABC):
         self.driver.get(url); self.driver.maximize_window()
         self.serfiles = []
         
-    def wait_for_and_find(self, tag: str, tag_type="selector", wait_time=30):
+    def wait_for_and_find(self, tag: str, tag_type="selector", wait_time=15, wait_type='presence'):
         """
         Automatically give time for an element to render and then select it.
-
+        tag_type: ['selector','xpath','link_text']
+        wait_type: ['presence','visible']
+        
         Parameters
         ----------
         tag : str
@@ -30,15 +32,13 @@ class SerfScraper(ABC):
             The type of tag (css_select, xpath, ect). The default is "selector".
         wait_time : TYPE, optional
             The number of seconds to wait for element to render. The default is 60.
-
         Returns
         -------
         TYPE
             The element.
-
         """
         if tag_type == "selector":
-            by = By.CSS_SELECTOR
+            by = By.CSS_SELECTOR 
         
         elif tag_type == "xpath":
             by = By.XPATH
@@ -46,7 +46,10 @@ class SerfScraper(ABC):
         elif tag_type == "link_text":
             by = By.LINK_TEXT
             
-        return WebDriverWait(self.driver, wait_time).until(EC.presence_of_element_located((by, tag)))
+        if wait_type=='presence':
+            return WebDriverWait(self.driver, wait_time).until(EC.presence_of_element_located((by, tag)))
+        if wait_type=='visible':
+            return WebDriverWait(self.driver, wait_time).until(EC.visibility_of_element_located((by, tag)))
     
     @abstractmethod
     def scrape_website(self) -> List[SerfFile]:
