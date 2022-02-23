@@ -14,6 +14,15 @@ from utils import get_download_path, unzip_path, get_quarter
 from pdf_parsing import find_pdf_effective_date
 
 def get_serf_states_to_run():
+    """
+    
+
+    Returns
+    -------
+    states_to_run : TYPE
+        DESCRIPTION.
+
+    """
     serf_sites = [
         "https://filingaccess.serff.com/sfa/home/CO",
         "https://filingaccess.serff.com/sfa/home/CT",
@@ -42,6 +51,20 @@ def get_serf_states_to_run():
     return states_to_run
             
 def get_common_serf_collection(collector):
+    """
+    
+
+    Parameters
+    ----------
+    collector : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    collected_serfiles : TYPE
+        DESCRIPTION.
+
+    """
     states_to_run = get_serf_states_to_run()
     collected_serfiles = []
     
@@ -60,8 +83,17 @@ def get_common_serf_collection(collector):
     return collected_serfiles
         
 def get_ca_cdi_serf_collection():
+    """
+    
+
+    Returns
+    -------
+    TYPE
+        DESCRIPTION.
+
+    """
     df = pd.read_csv('serf_states_to_run.csv')
-    ca_val = df[df['State'] == 'CA']['Run'].values[0]
+    ca_val = df[df['State'] == 'CA_cdi']['Run'].values[0]
     
     if ca_val == 'Yes':
         cdi_scraper = CACDISerfScraper()
@@ -72,8 +104,17 @@ def get_ca_cdi_serf_collection():
         return []
 
 def get_ca_dmhc_serf_collection():
+    """
+    
+
+    Returns
+    -------
+    TYPE
+        DESCRIPTION.
+
+    """
     df = pd.read_csv('serf_states_to_run.csv')
-    ca_val = df[df['State'] == 'CA']['Run'].values[0]
+    ca_val = df[df['State'] == 'CA_dmhc']['Run'].values[0]
     
     if ca_val == 'Yes':
         dmhc_scraper = CADMHCSerfScraper()
@@ -84,6 +125,20 @@ def get_ca_dmhc_serf_collection():
         return []
 
 def temp_unzip_pdf(file) -> str:
+    """
+    
+
+    Parameters
+    ----------
+    file : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    str
+        DESCRIPTION.
+
+    """
     download_path = get_download_path()
     temp_path = os.path.join(download_path, 'temp')
     if os.path.exists(temp_path):
@@ -102,6 +157,20 @@ def temp_unzip_pdf(file) -> str:
     
 
 def get_zip_eff_date(zip_file_name):
+    """
+    
+
+    Parameters
+    ----------
+    zip_file_name : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    effective_date : TYPE
+        DESCRIPTION.
+
+    """
     download_path = get_download_path()
     file = os.path.join(download_path, zip_file_name)
     pdf_file = temp_unzip_pdf(file)
@@ -109,6 +178,20 @@ def get_zip_eff_date(zip_file_name):
     return effective_date
 
 def rename_serfile_eff_dates(serfiles):
+    """
+    
+
+    Parameters
+    ----------
+    serfiles : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    serfiles : TYPE
+        DESCRIPTION.
+
+    """
     for i, file in enumerate(serfiles):
         zip_file_name = file.data_dict['file_name']
         effective_date = get_zip_eff_date(zip_file_name)
@@ -121,6 +204,14 @@ def rename_serfile_eff_dates(serfiles):
     return serfiles
 
 def unzip_downloads():
+    """
+    
+
+    Returns
+    -------
+    None.
+
+    """
     download_path = get_download_path()
     try:
         unzip_path(download_path)
@@ -128,11 +219,19 @@ def unzip_downloads():
         print('Finished unzipping folders.')
 
 def main():
+    """
+    
+
+    Returns
+    -------
+    None.
+
+    """
     collector = FileCollector()
     collector.move_old_dl_files()
     
-    # serfiles = get_ca_cdi_serf_collection()
-    # collector.relocate_files(serfiles)
+    serfiles = get_ca_cdi_serf_collection()
+    collector.relocate_files(serfiles)
     
     serfiles = get_ca_dmhc_serf_collection()
     collector.relocate_files(serfiles)

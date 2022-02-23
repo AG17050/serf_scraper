@@ -12,9 +12,6 @@ import os
 
 class FileCollector:
     
-    # def __init__(self):
-    #     pass
-    
     def move_old_dl_files(self):
         download_path = get_download_path()
         dl_files = os.listdir(download_path)
