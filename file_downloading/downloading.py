@@ -10,6 +10,7 @@ import shutil
 import os
 from typing import List
 from utils import market_agg, get_quarter
+import time
 
 class SerfFile:
     
@@ -97,8 +98,12 @@ class DLRelocator:
         self.__create_necessary_folders(dest_folder_path)
         
         file_path = os.path.join(data_dict['current_path'], data_dict['file_name'])
-        shutil.move(file_path, dest_folder_path)
-        
+        try:
+            shutil.move(file_path, dest_folder_path)
+        except:
+            time.sleep(1)
+            shutil.move(file_path, dest_folder_path)
+            
     def relocate_files(self, serfile_list: List[SerfFile]):
         for serfile in serfile_list:
             self.relocate_file(serfile)
