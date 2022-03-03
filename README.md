@@ -16,9 +16,9 @@ Whatever is downloaded is stored in the Downloads folder.
 * Set the sites that you want to run with the `serf_states_to_run.csv`
 * Set the submission date you want using the `serf_submission_dates.txt`
 * run `main.py` *or* double click the `serf_filing.bat` file.
- * Open up anaconda navigator
- * `cd <path to serf_scraper>`
- * `python main.py`
+ * Open up anaconda prompt
+ * enter the command `cd <path to serf_scraper>`
+ * enter the command `python main.py`
 
 ## How to run with task scheduler:
 If you wish to use windows scheduler to run the scraper, ensure you've put your username and the appropriate virtual environment in the
